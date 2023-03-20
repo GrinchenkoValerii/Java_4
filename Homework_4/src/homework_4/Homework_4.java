@@ -21,12 +21,11 @@ public class Homework_4 {
         String Pyt = "";
         int s = 0;
         System.out.println("Введите символ или символы, какими разделить содержимое файлом в итоговом файле (' ', ', ' и тд):");
-        scan.nextLine();
+        String raz = scan.nextLine();
         
         System.out.println("\n");
         System.out.println("Введите количество файлов для склейки:");
         int kolvo = scan.nextInt();
-        String raz = scan.nextLine();
         while (kolvo >= 1){
             kolvo = kolvo - 1;
             int Qw = 1;
