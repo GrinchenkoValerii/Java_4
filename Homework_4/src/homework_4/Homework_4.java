@@ -3,7 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package homework_4;
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Scanner;
 import java.io.IOException;
 
@@ -13,52 +16,55 @@ import java.io.IOException;
  */
 public class Homework_4 {
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, IOException{
         Scanner scan = new Scanner(System.in);
         System.out.println("Работу выполнил Гринченко Валерий, РИБО-01-21, Вариант №1" + "\n");
+
+        int countOfFiles;
+        System.out.println("Введите количество файлов для склейки:");
+        countOfFiles = scan.nextInt();
         
-        String Str = "";
-        String Pyt = "";
-        int s = 0;
-        System.out.println("Введите символ или символы, какими разделить содержимое файлом в итоговом файле (' ', ', ' и тд):");
-        String raz = scan.nextLine();
+        File[] fileArray = new File[countOfFiles];
+        String path;
+        File file;
+        for (int i=0; i < fileArray.length; i++) {
+            while (true) {
+                System.out.println("\n");
+                System.out.println("Введите путь " + (i+1) + "-го файла:");
+                path = scan.next();
+                file = new File(path);
+                fileArray[i] = file;
+                break;
+            }
+        }
+
+        FileInputStream fis;
+        byte[][] contentArray = new byte[countOfFiles][];
+        byte[] fileContent;
+        int countOfBytes = 0;
+        for (int j=0; j < contentArray.length; j++) {
+            fis = new FileInputStream(fileArray[j]);
+            fileContent = new byte[fis.available()];
+            countOfBytes = countOfBytes + fis.available();
+            fis.read(fileContent);
+            fis.close();
+            contentArray[j] = fileContent;
+        }
+
+        File resultFile = new File(fileArray[0].getParent() + "\\Final.txt");
+        byte[] resultArray = new byte[countOfBytes];
+        int a = 0;
+        for (int i=0; i < contentArray.length; i++) {
+            for (int j=0; j < contentArray[i].length; j++) {
+                resultArray[a] = contentArray[i][j];
+                a++;
+            }
+        }
         
         System.out.println("\n");
-        System.out.println("Введите количество файлов для склейки:");
-        int kolvo = scan.nextInt();
-        while (kolvo >= 1){
-            kolvo = kolvo - 1;
-            int Qw = 1;
-            String str = "";
-            s = s + 1;
-            System.out.println("\n");
-            System.out.println("Введите путь " + s + "-го файла:");
-            String path = scan.next();
-            if (Qw != 0){
-                Qw = Qw - 1;
-                Pyt = path;
-            }
-            
-            try (FileReader reader = new FileReader(path)){
-                int c;
-                while ((c = reader.read()) != -1){
-                    str = str + (char)c;
-                }
-                Str = Str + str + raz;
-            }
-            catch (IOException ex){
-                System.out.println("При чтении из файла возникла ошибка: " + ex.getMessage());
-            }
-        }
-        try {
-            System.out.println("\n");
-            Str = Str.substring(0, Str.length() - raz.length());
-            Pyt = Pyt.substring(0, Pyt.lastIndexOf("\\")) + "\\Final.txt";
-            FileUtils.writeStringToFile(Pyt, Str);
-            System.out.println("Результат находится в файле по пути: " + Pyt);
-        }
-        catch (IOException ex){
-            System.out.println("При записи в файл возникла ошибка: " + ex.getMessage());
-        }
+        FileOutputStream fos = new FileOutputStream(resultFile);
+        fos.write(resultArray);
+        fos.close();
+        System.out.println("Результат находится в файле по пути: " + resultFile.getPath());
     }
 }
